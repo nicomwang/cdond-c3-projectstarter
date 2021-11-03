@@ -127,10 +127,9 @@ jobs:
       - run:
           name: Install depenencies
           command: |
-            yum -y install tar
-            yum -y install gzip
+            yum -y install tar gzip
       - run:
-          name: Create/update back-end infrastructure
+          name: Ensure back-end infrastructure exists
           command: |
             # Use the workflow id to mark your CloudFormation stacks so that you can reference them later on (ex: rollback). 
             aws cloudformation deploy \
@@ -139,7 +138,7 @@ jobs:
                 --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
                 --tags project=udapeople
       - run:
-          name: Create/update front-end infrastructure
+          name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
