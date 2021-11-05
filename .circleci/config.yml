@@ -193,7 +193,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt -y install awscli
+            npm install -g aws-cli
       - run:
           name: Run migrations
           command: |
