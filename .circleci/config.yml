@@ -12,13 +12,17 @@ commands:
         default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - run:
+          name: Destroy front-end stack 
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" 
+      - run:
           name: Destroy back-end and front-end stack 
           when: on_fail
           command: |
             aws cloudformation delete-stack \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" 
-            aws cloudformation delete-stack \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" 
       
 jobs:
   build-frontend:
