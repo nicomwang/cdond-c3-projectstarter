@@ -16,13 +16,13 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name "udapeople-front-end-${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Destroy back-end
           when: on_fail
           command: |
             aws cloudformation delete-stack \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name "udapeople-back-end-${CIRCLE_WORKFLOW_ID:0:7}"
 
 jobs:
   build-frontend:
@@ -137,7 +137,7 @@ jobs:
             # Use the workflow id to mark your CloudFormation stacks so that you can reference them later on (ex: rollback). 
             aws cloudformation deploy \
                 --template-file .circleci/files/backend.yml \
-                --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --stack-name "udapeople-back-end-${CIRCLE_WORKFLOW_ID:0:7}" \
                 --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
                 --tags project=udapeople
       - run:
@@ -145,7 +145,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --stack-name "udapeople-front-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name "udapeople-front-end-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
       - run:
           name: Add back-end ip to ansible inventory
@@ -187,6 +187,7 @@ jobs:
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
+        user: root
     steps:
       - checkout
       - restore_cache:
@@ -200,9 +201,9 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            sudo npm install
+            npm install
             # Run and sve the migration output
-            sudo npm run migrations > migrations_dump.txt
+            npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
       - run:
           name: Send migration results to memstash
