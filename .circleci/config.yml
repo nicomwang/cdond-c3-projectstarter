@@ -243,10 +243,10 @@ jobs:
       - run:
           name: Install node and npm
           command: |
-            sudo yum update
-            sudo yum -y install curl
+            yum update
+            yum -y install curl
             curl --silent --location https://rpm.nodesource.com/setup_14.x | bash -
-            sudo yum install –y nodejs
+            yum install –y nodejs
       - run:
           name: Get backend url
           command: |
