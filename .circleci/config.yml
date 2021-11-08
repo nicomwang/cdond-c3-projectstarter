@@ -24,6 +24,23 @@ commands:
             aws cloudformation delete-stack \
               --stack-name "udapeople-back-end-${CIRCLE_WORKFLOW_ID:0:7}"
 
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      workflow_id:
+        type: string      
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            SUCCESS=$(curl -H "Content-Type: text/plain" -H "token: 704c29c2-10dd-42bf-9b68-6cd8b6b276c9" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            if (( $SUCCESS == 1 ));
+            then
+              cd ~/project/backend
+              npm install
+              npm run migration:revert
+            fi  
 jobs:
   build-frontend:
     docker:
@@ -208,6 +225,7 @@ jobs:
             else
               curl -H "Content-Type: text/plain" -H "token: 704c29c2-10dd-42bf-9b68-6cd8b6b276c9" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             fi
+      - revert-migrations
 
   deploy-frontend:
     docker:
@@ -223,7 +241,6 @@ jobs:
       - run:
           name: Install python and ansible
           command: |
-            yum upadte -y
             yum install -y python3
             pip3 install ansible
       - run:
@@ -249,8 +266,9 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      # Here's where you will add some code to rollback on failure
-      
+      - revert-migrations
+      - destroy-environment
+           
 workflows:
   default:
     jobs:
