@@ -187,16 +187,10 @@ jobs:
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
-        user: root
     steps:
       - checkout
       - restore_cache:
           keys: [backend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update
-            sudo apt -y install awscli
       - run:
           name: Run migrations
           command: |
@@ -214,8 +208,48 @@ jobs:
             else
               curl -H "Content-Type: text/plain" -H "token: 704c29c2-10dd-42bf-9b68-6cd8b6b276c9" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             fi
-      - destroy-environment
 
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install tar
+          command: |
+            yum -y install tar gzip
+      - run:
+          name: Install python and ansible
+          command: |
+            yum upadte -y
+            yum install -y python3
+            pip3 install ansible
+      - run:
+          name: Install node and npm
+          command: |
+            sudo yum install nodejs npm --enablerepo=epel   
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aaws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}")
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      # Here's where you will add some code to rollback on failure
+      
 workflows:
   default:
     jobs:
@@ -235,3 +269,5 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
