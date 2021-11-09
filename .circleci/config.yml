@@ -226,28 +226,29 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
           name: Install system dependencies
           command: |
-            apk add no-cache curl
-            apk add no-cache upgrade bash
+            yum -y install tar gzip
+            yum -y install curl
+            yum -y install sudo
       - attach_workspace:
           at: ~/
       - run:
-          name: Install ansible
+          name: Install python and ansible
           command: |
-            apk add --update ansible
-      - run:
-          name: Install AWS CLI
-          command: |
-            pip3 install awscli
+            yum install -y python3
+            pip3 install ansible
       - run:
           name: Install node and npm
           command: |
-            apk add --update nodejs npm
+            yum update
+            curl -sL https://rpm.nodesource.com/setup_14.x | bash -
+            sudo yum install gcc-c++ make
+            sudo yum install –y nodejs
       - run:
           name: Get backend url
           command: |
@@ -269,6 +270,7 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - revert-migrations
       - destroy-environment
+ 
            
 workflows:
   default:
