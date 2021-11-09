@@ -1,9 +1,12 @@
 ---
 - name: "extract the zipped artifact into the EC2 instance"
-  unarchive:
-    src: artifact.tar.gz
-    dest: ~/backend
-  # remote_src: yes
+  # unarchive:
+  #   src: artifact.tar.gz
+  #   dest: /home/ubuntu
+  #   remote_src: yes
+  shell: |
+    cd ~/backend
+    tar -xvzf artifact.tar.gz
 
 - name: "Install dependencies"
   shell: |

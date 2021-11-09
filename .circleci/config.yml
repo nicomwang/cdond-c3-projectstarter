@@ -279,6 +279,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            apk add --update tar 
+            apk add --update gzip 
             apk add --update curl 
             apk add --update nodejs npm
             apk add --update ansible 
@@ -293,7 +295,7 @@ jobs:
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
             # copy the artifact into this directory
-            mv artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files
+            # mv artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
