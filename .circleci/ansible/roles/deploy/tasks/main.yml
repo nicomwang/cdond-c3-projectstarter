@@ -2,7 +2,7 @@
 - name: "extract the zipped artifact into the EC2 instance"
   unarchive:
     src: artifact.tar.gz
-    dest: ~/backend
+    dest: /home/ubuntu
 
 - name: "Install dependencies"
   shell: |
