@@ -1,0 +1,17 @@
+---
+- name: "extract the zipped artifact into the EC2 instance"
+  unarchive:
+    src: artifact.tar.gz
+    dest: ~/project/.circleci/ansible/roles/deploy/files
+
+- name: "Install dependencies"
+  shell: |
+    cd ~/backend
+    npm install
+
+- name: "start the app"
+  shell: |
+    cd ~/backend
+    pm2 stop default
+    pm2 start npm -- start
+
