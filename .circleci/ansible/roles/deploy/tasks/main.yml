@@ -2,7 +2,7 @@
 - name: "extract the zipped artifact into the EC2 instance"
   unarchive:
     src: artifact.tar.gz
-    dest: ~/project/.circleci/ansible/roles/deploy/files
+    dest: ~/backend
 
 - name: "Install dependencies"
   shell: |

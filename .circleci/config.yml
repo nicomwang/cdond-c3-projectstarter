@@ -15,6 +15,7 @@ commands:
           name: Destroy front-end stack
           when: on_fail
           command: |
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws cloudformation delete-stack \
               --stack-name "udapeople-front-end-${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
@@ -291,7 +292,9 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
+            # copy the artifact into this directory
+            cp artifact.tar.gz my_file2.txt
+            cd .circleci/ansible ~/project/.circleci/ansible/roles/deploy/files
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
