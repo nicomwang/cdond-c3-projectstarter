@@ -352,7 +352,7 @@ jobs:
               return 1
             fi
       - revert-migrations
-      # - destroy-environment           
+      - destroy-environment           
 
 workflows:
   default:
