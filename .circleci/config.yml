@@ -394,23 +394,24 @@ jobs:
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"   
-
+            
             echo "---------Cleanup Started---------"
-            for i in ${STACKS[@]}; 
+            for i in "${STACKS[@]}";
             do
-              if [[ $i == *"${CIRCLE_WORKFLOW_ID:0:7}"]]
+              if [[ $i == *"${CIRCLE_WORKFLOW_ID:0:7}" ]]
               then
                 echo "---------Stack is current---------"
               else
                 echo "---------Deleting S3 buckets--------"
                 aws s3 rm "s3://udapeople-${oldID}" --recursive
                 echo "---------Deleting backend stacks--------"
-                aws cloudformation delete-stack --stack-name "udapeople-backend-${oldID}"
+                aws cloudformation delete-stack --stack-name "udapeople-back-end-${oldID}"
                 echo "---------Deleting frontend stacks--------"
-                aws cloudformation delete-stack --stack-name "udapeople-frontend-${oldID}"
+                aws cloudformation delete-stack --stack-name "udapeople-front-end-${oldID}"
               fi
             done
             echo "---------Cleanup Ended---------"
+            
 workflows:
   default:
     jobs:
