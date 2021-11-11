@@ -398,14 +398,16 @@ jobs:
             echo "---------Cleanup Started---------""
             for i in ${STACKS[@]}; 
             do
-              if [[ $i != *"${CIRCLE_WORKFLOW_ID:0:7}"]]
+              if [[ $i == *"${CIRCLE_WORKFLOW_ID:0:7}"]]
               then
-                echo "---------Deleting old stacks--------""
-                aws s3 rm "s3://udapeople-${oldID}" --recursive
-                aws cloudform ation delete-stack --stack-name "udapeople-backend-${oldID}"
-                aws cloudformation delete-stack --stack-name "udapeople-frontend-${oldID}"
-              else
                 echo "---------Stack is current---------""
+              else
+                echo "---------Deleting S3 buckets--------""
+                aws s3 rm "s3://udapeople-${oldID}" --recursive
+                echo "---------Deleting backend stacks--------""
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${oldID}"
+                echo "---------Deleting frontend stacks--------""
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${oldID}"
               fi
             done
             echo "---------Cleanup Ended---------""
