@@ -380,7 +380,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Get old stack workflow id
+          name: Get old stack workflow id then remove old stacks and files
           command: |
             # Fetch the Old workflow ID
             export OldWorkflowID=$(aws cloudformation \
@@ -392,9 +392,7 @@ jobs:
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"   
-      - run:
-          name: Remove old stacks and files
-          command: |
+
             echo "---------Cleanup Started---------""
             for i in ${STACKS[@]}; 
             do
