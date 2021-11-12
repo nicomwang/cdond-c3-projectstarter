@@ -235,7 +235,7 @@ jobs:
       - run:
           name: Install system dependencies
           command: |
-            apk add --update curl 
+            apk add --update curl Í
       - run:
           name: Install node and npm
           command: |
@@ -314,13 +314,6 @@ jobs:
             apk add --update curl 
             apk add --update nodejs npm
             pip3 install awscli
-      # - run:
-      #     name: Get backend url
-      #     command: |
-      #       export BACKEND_IP=$(aws ec2 describe-instances \
-      #         --query 'Reservations[*].Instances[*].PublicIpAddress' \            
-      #         --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-      #         --output text)
       - run:
           name: Backend smoke test.
           command: |
@@ -351,18 +344,14 @@ jobs:
             else
               return 1
             fi
-      # - revert-migrations
-      # - destroy-environment           
+      - revert-migrations
+      - destroy-environment           
 
   cloudfront-update:
     docker:
       - image: amazon/aws-cli
     steps:
       - checkout
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # your code here
       - run:
           name: Update cloudfront distribution
           command: |
@@ -432,10 +421,9 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
-          requires: [deploy-backend]
-           # requires: [smoke-test]
+          requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update] 
