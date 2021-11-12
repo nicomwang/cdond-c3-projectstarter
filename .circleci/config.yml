@@ -402,9 +402,9 @@ jobs:
               else
                 echo deleting stack: "$i"
                 export oldId=${i: -7}
-                aws s3 rm "s3://udapeople-${oldID}" --recursive
-                aws cloudformation delete-stack --stack-name "udapeople-back-end-${oldID}"
-                aws cloudformation delete-stack --stack-name "udapeople-front-end-${oldID}"
+                aws s3 rm "s3://udapeople-${oldId}" --recursive
+                aws cloudformation delete-stack --stack-name "udapeople-back-end-${oldId}"
+                aws cloudformation delete-stack --stack-name "udapeople-front-end-${oldId}"
               fi
             done
             echo "---------Cleanup Ended---------"
