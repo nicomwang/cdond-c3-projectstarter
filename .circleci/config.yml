@@ -283,18 +283,21 @@ jobs:
             apk add --update gzip 
             apk add --update curl 
             apk add --update nodejs npm
+            apk add --update npm
             apk add --update ansible 
             pip3 install awscli
       - run:
           name: Deploy backend
           command: |
             cd backend
-            npm i
+            npm install
             npm run build
+            echo "Build was successful -------"
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
             # copy the artifact into this directory
+            echo "start to copy the artifact -------"
             mv artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files/
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
