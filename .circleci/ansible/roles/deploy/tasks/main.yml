@@ -5,14 +5,14 @@
     state: directory
 
 - name: "extract the zipped artifact into the EC2 instance"
-  # unarchive:
-  #   src: artifact.tar.gz
-  #   dest: ~/backend
-  #   remote_src: yes
-  shell: |
-    cd ~/backend
-    tar -xvzf artifact.tar.gz .
-    ls -al
+  unarchive:
+    src: artifact.tar.gz
+    dest: ~/backend
+
+  # shell: |
+  #   cd ~/backend
+  #   tar -xvzf artifact.tar.gz .
+  #   ls -al
 
 - name: "Install dependencies"
   shell: |
@@ -20,6 +20,7 @@
     npm install
 
 - name: "start the app"
+  become: yes
   shell: |
     cd ~/backend
     pm2 stop default
