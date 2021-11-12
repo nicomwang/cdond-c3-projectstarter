@@ -400,6 +400,7 @@ jobs:
               then
                 echo current stack: "$i"
               else
+                echo deleting stack: "$i"
                 export oldId=${i: -7}
                 aws s3 rm "s3://udapeople-${oldID}" --recursive
                 aws cloudformation delete-stack --stack-name "udapeople-back-end-${oldID}"
